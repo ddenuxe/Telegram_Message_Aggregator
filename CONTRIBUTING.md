@@ -12,7 +12,7 @@
 | app.py | API, SQLite, Telegram, загрузка медиа и миграции базы |
 | launcher.py | Окно запуска, первичная настройка и остановка сервера |
 | TGMonitor.spec | Состав Windows EXE |
-| build_portable.ps1 | Чистая упаковка исходников и приложения |
+| scripts/build_portable.ps1 | Чистая упаковка исходников и приложения |
 | requirements.lock | Зафиксированные зависимости приложения |
 | tests | Проверки на временных базах и данных |
 
@@ -30,7 +30,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe launcher.py --data-dir .\data
 ```
 
-Первый запуск launcher.py открывает окно настройки. Изолируйте данные разработки в data; не подключайте одну Telegram-сессию одновременно к двум экземплярам приложения. Для сервера без окна предварительно настройте data, затем выполните:
+Перед первым запуском скопируйте config.example.ini в data/config.ini и заполните собственные API ID и API hash. Окна ввода ключей в launcher.py нет. Изолируйте данные разработки в data; не подключайте одну Telegram-сессию одновременно к двум экземплярам приложения. Для сервера без окна предварительно настройте data, затем выполните:
 
 ```powershell
 .\.venv\Scripts\python.exe launcher.py --headless --data-dir .\data
@@ -53,13 +53,13 @@ Node.js нужен только для необязательных тестов
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-build.txt
-.\.venv\Scripts\python.exe collect_licenses.py
-powershell -NoProfile -ExecutionPolicy Bypass -File .\build_portable.ps1
-.\.venv\Scripts\python.exe verify_bundle.py .\dist\TGMonitor-Windows-x64
+.\.venv\Scripts\python.exe scripts/collect_licenses.py
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts/build_portable.ps1
+.\.venv\Scripts\python.exe scripts/verify_bundle.py .\dist\TGMonitor-Windows-x64
 ```
 
 Если dist/TGMonitor-Windows-x64 или ZIP уже существует, переименуйте предыдущий результат перед сборкой. Сборщик не подменяет работающий EXE. Для другой среды сборки есть параметр -BuildPython. Для упаковки только исходников используйте -SourceOnly. В готовом приложении Python и библиотеки включены в комплект.
 
 ## Публикация
 
-Публикуйте чистый архив исходников, созданный build_portable.ps1 -SourceOnly. Собственная рабочая папка может содержать сессии, ключи, медиа и базы: они не являются частью исходного кода. .gitignore исключает их из обычного добавления в Git; сборщик использует явный список файлов. LICENSE и third_party_licenses должны сохраняться в распространяемых копиях. Заголовки и пути в локальных журналах сборки не нужны для запуска и не входят в распространяемый архив.
+Публикуйте чистый архив исходников, созданный scripts/build_portable.ps1 -SourceOnly. Собственная рабочая папка может содержать сессии, ключи, медиа и базы: они не являются частью исходного кода. .gitignore исключает их из обычного добавления в Git; сборщик использует явный список файлов. LICENSE и third_party_licenses должны сохраняться в распространяемых копиях. Заголовки и пути в локальных журналах сборки не нужны для запуска и не входят в распространяемый архив.
